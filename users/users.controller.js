@@ -3,7 +3,7 @@ const UserService = require('./users.service')
 const CreateUser = async (req, res) => {
     const prevauthor = req.prevauthor
     let authorID = 1
-    if(prevauthor){
+    if(prevauthor[0].authorID){
        authorID = prevauthor[0].authorID + 1
     }
     serviceResponse = await UserService.CreateUser(req.body, authorID)
