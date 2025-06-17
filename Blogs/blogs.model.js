@@ -9,6 +9,10 @@ const blogsSchema = new mongoose.Schema({
     description: {
         type: String
     },
+    author: {
+        type: String,
+        required: true
+    },
     authorID: {
         type: Number,
         required: true

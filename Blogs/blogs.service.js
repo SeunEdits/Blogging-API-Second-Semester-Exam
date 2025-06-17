@@ -5,6 +5,7 @@ const Mongoose = require('mongoose')
 const CreateBlog = async ({
     title,
     description,
+    author,
     authorID,
     tags,
     body,
@@ -14,6 +15,7 @@ const CreateBlog = async ({
     const createBlog = await Blogs.create({
         title,
         description,
+        author,
         authorID,
         tags,
         body,
@@ -23,15 +25,19 @@ const CreateBlog = async ({
     return createBlog
 }
 
-const getAllBlogs = async ({ id, state }) => {
+const getAllBlogs = async ({ author, title, tags }) => {
     const query = {}
 
-    if (id) {
-        query.id = id
+    if (author) {
+        query.author = author
     }
 
-    if (state) {
-        query.state = state
+    if (title) {
+        query.title = title
+    }
+
+    if (tags) {
+        query.tags = tags
     }
     console.log(query)
     const blogs = await Blogs.find(query)
@@ -42,12 +48,17 @@ const getAllBlogs = async ({ id, state }) => {
 const getBlogsByID = async (id) => {
     _id = new Mongoose.Types.ObjectId(id)
 
-    const blog = await Blogs.findOne(_id)
+    const blog = await Blogs.findOneAndUpdate(_id, {$inc: {"read_count": 1}})
     return blog
 }
 
-const getMyBlogs = async (authorID) => {
-    const blogs = await Blogs.find(authorID)
+const getMyBlogs = async ({authorID, state}) => {
+    let query = {authorID}
+
+    if (state) {
+        query.state = state
+    }
+    const blogs = await Blogs.find(query).limit(20)
 
     return blogs
 }

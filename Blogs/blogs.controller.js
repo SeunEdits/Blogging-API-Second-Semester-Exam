@@ -16,11 +16,12 @@ const isOwner = async (_id, req, res) => {
 
 const getBlogsController = async (req, res) => {
     try {
-        const { id, state } = req.query
+        const { author, title, tags } = req.query
 
         const response = await BlogService.getAllBlogs({
-            id,
-            state
+            author,
+            title,
+            tags
         })
 
         return res.status(200).json({
@@ -45,6 +46,10 @@ const getBlogsByIDController = async (req, res) => {
                 message: 'Blogs retrieved successfully',
                 data: response
             })
+        } else{
+            return res.status(400).json({
+                error: 'Blog does not exist'
+            })
         }
 
     } catch (error) {
@@ -57,10 +62,11 @@ const getBlogsByIDController = async (req, res) => {
 
 const getPersonalBlogs = async (req, res) => {
     try {
+        const {state} = req.query
         const user = req.user
         authorID = user['authorID']
 
-        const response = await BlogService.getMyBlogs({ authorID })
+        const response = await BlogService.getMyBlogs({ authorID, state })
 
         return res.status(200).json({
             message: 'Blogs retrieved successfully',
@@ -77,11 +83,13 @@ const getPersonalBlogs = async (req, res) => {
 const createBlogController = async (req, res) => {
     try {
         const payload = req.body
+        const user = req.user
 
         const response = await BlogService.CreateBlog({
             title: payload.title,
             description: payload.description,
-            authorID: payload.authorID,
+            author: `${user.firstName} ${user.lastName}`,
+            authorID: user.authorID,
             tags: payload.tags,
             body: payload.body,
             time_stamp: Date.now()
