@@ -1,7 +1,12 @@
 const UserService = require('./users.service')
 
 const CreateUser = async (req, res) => {
-    serviceResponse = await UserService.CreateUser(req.body)
+    const prevauthor = req.prevauthor
+    let authorID = 1
+    if(prevauthor){
+       authorID = prevauthor[0].authorID + 1
+    }
+    serviceResponse = await UserService.CreateUser(req.body, authorID)
 
     res.status(serviceResponse.status).json(serviceResponse);
 }

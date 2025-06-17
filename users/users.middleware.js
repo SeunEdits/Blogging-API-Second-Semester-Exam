@@ -3,7 +3,7 @@ const User = require('./users.model')
 
 const AuthroizeUser = async (req, res, next) => {
     const bearerToken = req.headers['authorization']
-    
+
     if (!bearerToken) {
         return res.status(401).json({
             message: 'Authorization failed'
@@ -33,6 +33,19 @@ const AuthroizeUser = async (req, res, next) => {
 
 }
 
+const getNextAuthorID = async (req, res, next) => {
+    prevauthor = await User.find().sort({"authorID":-1}).limit(1)
+    if (prevauthor) {
+        req.prevauthor = prevauthor
+    } else {
+        req.prevauthor = {}
+    }
+
+    // prevauthor ? authorID = prevauthor.authorID+1 : authorID = 1
+    next()
+}
+
 module.exports = {
-    AuthroizeUser
+    AuthroizeUser,
+    getNextAuthorID
 }

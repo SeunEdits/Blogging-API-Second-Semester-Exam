@@ -5,14 +5,14 @@ const generateToken = (id) => {
     return jwt.sign( { id }, process.env.JWT_SECRET || 'test_secret', { expiresIn: "1h" })
 }
 
-const CreateUser = async({ firstName, lastName, email, password }) => {
+const CreateUser = async({ firstName, lastName, email, password }, authorID) => {
     const existingUser = await User.findOne({ email })
 
     if (existingUser) {
         return { status: 409, success: false, message: 'User already exists' }
     }
 
-    const user = await User.create({ firstName, lastName , email, password })
+    const user = await User.create({ firstName, lastName , email, password, authorID })
 
     const token = generateToken(user._id)
 
